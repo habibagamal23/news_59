@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:news_59/features/home/ui/detailesScreen.dart';
 
+import '../../../core/router.dart';
 import '../model/ArticalModel.dart';
 import '../model/newsmode.dart';
 
@@ -17,12 +19,7 @@ class NewsCard extends StatelessWidget {
     //navigate task
     return InkWell(
       onTap: () {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => NewsDetailScreen(
-                      article: article,
-                    )));
+        context.go(AppRoutes.details, extra: article);
       },
       child: Card(
         elevation: 3,

@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:news_59/features/home/logic/news_cubit.dart';
-import 'package:news_59/features/home/model/newsmode.dart';
-import 'package:news_59/features/home/ui/homeScreen.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-void main() {
+import 'core/router.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+void main()async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(
-    BlocProvider(
-      create: (context) => NewsCubit()..getdata(),
-      child: MyApp(),
-    ),
+    MyApp(),
   );
 }
 
@@ -18,6 +19,17 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(title: 'Flutter Demo', home: HomeScreen());
+    return ScreenUtilInit(
+        designSize: const Size(360, 690),
+        minTextAdapt: true,
+        builder: (context, child) {
+          return MaterialApp.router(
+            routerConfig: AppRouter.router,
+            title: 'News App',
+            theme: ThemeData(
+              primarySwatch: Colors.blue,
+            ),
+          );
+        });
   }
 }
