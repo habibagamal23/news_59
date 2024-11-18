@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../logic/artical_cubit.dart';
+import 'package:news_59/features/home/logic/news_cubit.dart';
 
 import 'newsBody.dart';
 
@@ -13,24 +12,22 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(
           title: const Text("News App"),
-          actions: [
-            IconButton(icon: Icon(Icons.refresh), onPressed: () {}),
-          ],
         ),
-        body:
-            BlocBuilder<ArticalCubit, ArticalState>(builder: (context, state) {
-          if (state is ArticalsLoading) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (state is ArticalsSucuess) {
+        body: BlocBuilder<NewsCubit, NewsState>(builder: (context, state) {
+          if (state is NewsLoading) {
+            return CircularProgressIndicator();
+          }
+          if (state is NewsSucces) {
             return ListView.builder(
                 itemCount: state.articals.length,
                 itemBuilder: (context, index) {
-                  return NewsCard(article: state.articals[index]);
+                  return  NewsCard(article: state.articals[index]);
                 });
-          } else if (state is ArticalsFaliuere) {
-            return Text(state.err);
           }
-          return const Text("No articles available");
+          if (state is NewsFauiler) {
+            return Text(state.msg);
+          }
+          return Container();
         }));
   }
 }

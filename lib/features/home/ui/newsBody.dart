@@ -1,8 +1,8 @@
-
 import 'package:flutter/material.dart';
+import 'package:news_59/features/home/ui/detailesScreen.dart';
 
-import '../model/Artical/ArticalModel.dart';
-
+import '../model/ArticalModel.dart';
+import '../model/newsmode.dart';
 
 class NewsCard extends StatelessWidget {
   final Article article;
@@ -17,7 +17,12 @@ class NewsCard extends StatelessWidget {
     //navigate task
     return InkWell(
       onTap: () {
-
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => NewsDetailScreen(
+                      article: article,
+                    )));
       },
       child: Card(
         elevation: 3,

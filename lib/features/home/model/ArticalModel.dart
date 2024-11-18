@@ -1,25 +1,3 @@
-class NewsResponse {
-  final String? status;
-  final int? totalResults;
-  final List<Article>? articles;
-
-  NewsResponse({
-    this.status,
-    this.totalResults,
-    this.articles,
-  });
-
-  factory NewsResponse.fromJson(Map<String, dynamic> json) {
-    return NewsResponse(
-      status: json['status'] as String?,
-      totalResults: json['totalResults'] as int?,
-      articles: (json['articles'] as List<dynamic>?)
-          ?.map((article) => Article.fromJson(article as Map<String, dynamic>))
-          .toList(),
-    );
-  }
-}
-
 class Article {
   final Source? source;
   final String? author;
@@ -56,6 +34,8 @@ class Article {
     );
   }
 }
+
+
 
 class Source {
   final String? id;

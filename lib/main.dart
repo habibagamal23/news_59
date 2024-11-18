@@ -1,20 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:news_59/core/webservice/DioFactory.dart';
-import 'package:news_59/features/home/logic/artical_cubit.dart';
+import 'package:news_59/features/home/logic/news_cubit.dart';
+import 'package:news_59/features/home/model/newsmode.dart';
 import 'package:news_59/features/home/ui/homeScreen.dart';
-
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() {
   runApp(
-    MultiBlocProvider(
-      providers: [
-        BlocProvider(create: (_) => ArticalCubit(NewsService())),
-      ],
-      child: const MyApp(),
+    BlocProvider(
+      create: (context) => NewsCubit()..getdata(),
+      child: MyApp(),
     ),
   );
 }
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
