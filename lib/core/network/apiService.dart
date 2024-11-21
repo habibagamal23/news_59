@@ -1,33 +1,34 @@
 import 'package:dio/dio.dart';
 import 'package:news_59/core/network/apiConstant.dart';
-import 'package:news_59/features/home/model/newsmode.dart';
+import 'package:news_59/features/home/model/weatherModel.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
-class ApiService {
+class APiService {
   Dio? _dio;
 
-  Dio get dio {
+  Dio get getDioObj {
     if (_dio != null) {
       return _dio!;
     }
     _dio = Dio(BaseOptions(baseUrl: ApiConstant.baseUrl))
       ..interceptors.add(PrettyDioLogger(
-          request: true, requestBody: true,
-          error: true, responseBody: true));
+          responseBody: true, request: true, requestBody: true, error: true));
     return _dio!;
   }
 
-  Future<NewsResponse> fetchTopheadline() async {
+  // fun get current weather
+
+  Future<Weather> getCurrentWeather(String cuntry) async {
     try {
-      var response = await dio.get(ApiConstant.topHeadlindsEndpoint,
-          queryParameters: {"apiKey": ApiConstant.apiKey, "country": "us"});
-      if (response.statusCode == 200) {
-        return NewsResponse.fromJson(response.data);
+      var responese = await getDioObj.get(ApiConstant.currentweatherEndpoint,
+          queryParameters: {'key': ApiConstant.apiKey, 'q': cuntry});
+      if (responese.statusCode == 200) {
+        return Weather.fromJson(responese.data);
       } else {
-        throw Exception(" is Feailer Api Topheadline ${response.statusCode} ");
+        throw Exception("my current weather error ${responese.statusCode}");
       }
     } catch (e) {
-      throw Exception(" Api service Eroor  ${e.toString()} ");
+      throw Exception("my get weather error ${e.toString()}");
     }
   }
 }

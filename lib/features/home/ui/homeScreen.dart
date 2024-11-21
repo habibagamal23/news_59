@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:news_59/features/home/logic/news_cubit.dart';
-
-import 'newsBody.dart';
+import 'package:news_59/features/home/logic/weather_cubit.dart';
 
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
@@ -10,24 +8,50 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text("News App"),
-        ),
-        body: BlocBuilder<NewsCubit, NewsState>(builder: (context, state) {
-          if (state is NewsLoading) {
-            return CircularProgressIndicator();
-          }
-          if (state is NewsSucces) {
-            return ListView.builder(
-                itemCount: state.articals.length,
-                itemBuilder: (context, index) {
-                  return  NewsCard(article: state.articals[index]);
-                });
-          }
-          if (state is NewsFauiler) {
-            return Text(state.msg);
-          }
-          return Container();
-        }));
+      appBar: AppBar(
+        title: const Text("Weather App"),
+      ),
+      body: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller:  context.read<WeatherCubit> ().searchcontroller,
+                ),
+              ),
+              Expanded(
+                child: IconButton(onPressed: (){
+                  context.read<WeatherCubit>().getCurrentweather();
+                }, icon: Icon(Icons.search)),
+              )
+            ],
+          ),
+
+          Expanded(
+            child: BlocBuilder<WeatherCubit, WeatherState>(builder: (context, state) {
+              if (state is WeatherLoading) {
+                return CircularProgressIndicator();
+              }
+              if (state is WeatherSuccess) {
+                return Column(
+                  children: [
+                    Text("location : ${state.location!.name??""}"),
+                    Text("tem : ${state.currentweather!.tempC??""}"),
+
+                  ],
+                );
+              }
+
+              if (state is WeatherError) {
+                return Text(state.err);
+              }
+
+              return Text("Search to get weather ");
+            }),
+          ),
+        ],
+      ),
+    );
   }
 }
