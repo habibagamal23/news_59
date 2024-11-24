@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -25,10 +27,19 @@ class RegisetrCubit extends Cubit<RegisetrState> {
   /// Password visibility toggle
   bool isPasswordVisible = false;
 
+  /// Image file for user profile
+  File? profileImage;
+
   /// Toggles password visibility
   void togglePasswordVisibility() {
     isPasswordVisible = !isPasswordVisible;
     emit(RegisterPasswordVisibilityToggled(isPasswordVisible));
+  }
+
+  /// Set the selected profile image
+  void setProfileImage(File? image) {
+    profileImage = image;
+    emit(RegisterImageSelected(image));
   }
 
   /// Handles user registration
@@ -37,9 +48,7 @@ class RegisetrCubit extends Cubit<RegisetrState> {
       emit(RegisterFailure('Please fill all fields correctly.'));
       return;
     }
-
     emit(RegisterLoading());
-
     try {
       final registerRequestBody = RegisterRequestBody(
         email: emailController.text,
@@ -47,8 +56,8 @@ class RegisetrCubit extends Cubit<RegisetrState> {
         name: nameController.text,
         phoneNumber: phoneController.text,
       );
-
-      final user = await firebaseAuthService.register(registerRequestBody);
+      final user =
+          await firebaseAuthService.register(registerRequestBody, profileImage);
 
       if (user != null) {
         emit(RegisterSuccess(user));

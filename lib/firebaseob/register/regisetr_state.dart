@@ -9,7 +9,6 @@ class RegisterLoading extends RegisetrState {}
 
 class RegisterSuccess extends RegisetrState {
   final User user;
-
   RegisterSuccess(this.user);
 }
 
@@ -23,4 +22,9 @@ class RegisterPasswordVisibilityToggled extends RegisetrState {
   final bool isVisible;
 
   RegisterPasswordVisibilityToggled(this.isVisible);
+}
+
+class RegisterImageSelected extends RegisetrState {
+  File?  image;
+  RegisterImageSelected(this.image);
 }

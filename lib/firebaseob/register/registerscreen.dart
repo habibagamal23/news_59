@@ -1,9 +1,11 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:news_59/core/router.dart';
 import 'package:news_59/firebaseob/register/regisetr_cubit.dart';
+
 import '../customfeild.dart';
 
 class RegisterScreen extends StatelessWidget {
@@ -13,10 +15,7 @@ class RegisterScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Register',
-          style: TextStyle(fontSize: 20.sp),
-        ),
+        title: Text('Register', style: TextStyle(fontSize: 20.sp)),
       ),
       body: Form(
         key: registerCubit.formKey,
@@ -24,8 +23,10 @@ class RegisterScreen extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 16.w),
           child: SingleChildScrollView(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                // Profile Image Picker
+                _buildProfileImagePicker(registerCubit),
+                SizedBox(height: 16.h),
                 // Name Field
                 CustomTextField(
                   controller: registerCubit.nameController,
@@ -38,7 +39,7 @@ class RegisterScreen extends StatelessWidget {
                   },
                 ),
                 SizedBox(height: 16.h),
-                // email
+                // Email Field
                 CustomTextField(
                   controller: registerCubit.emailController,
                   label: 'Email',
@@ -49,6 +50,7 @@ class RegisterScreen extends StatelessWidget {
                     return null;
                   },
                 ),
+                SizedBox(height: 16.h),
                 // Phone Field
                 CustomTextField(
                   controller: registerCubit.phoneController,
@@ -62,39 +64,10 @@ class RegisterScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 16.h),
                 // Password Field
-                BlocBuilder<RegisetrCubit, RegisetrState>(
-                  builder: (context, state) {
-                    return CustomTextField(
-                      controller: registerCubit.passwordController,
-                      label: 'Password',
-                      obscureText: !registerCubit.isPasswordVisible,
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          registerCubit.isPasswordVisible
-                              ? Icons.visibility
-                              : Icons.visibility_off,
-                          size: 24.sp,
-                        ),
-                        onPressed: registerCubit.togglePasswordVisibility,
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your password.';
-                        }
-
-                        return null;
-                      },
-                    );
-                  },
-                ),
+                _buildPasswordField(registerCubit),
                 SizedBox(height: 32.h),
-
                 // Register Button
                 _buildRegisterButton(registerCubit),
-
-                TextButton(
-                    onPressed: () => context.go(AppRoutes.login),
-                    child: Text("HAva Acc"))
               ],
             ),
           ),
@@ -103,14 +76,64 @@ class RegisterScreen extends StatelessWidget {
     );
   }
 
+  Widget _buildProfileImagePicker(RegisetrCubit registerCubit) {
+    return BlocBuilder<RegisetrCubit, RegisetrState>(
+      builder: (context, state) {
+        return GestureDetector(
+          onTap: () async {
+            final picker = ImagePicker();
+            final pickedFile =
+                await picker.pickImage(source: ImageSource.camera);
+            if (pickedFile != null) {
+              registerCubit.setProfileImage(File(pickedFile.path));
+            }
+          },
+          child: CircleAvatar(
+            radius: 40.w,
+            backgroundImage: registerCubit.profileImage != null
+                ? FileImage(registerCubit.profileImage!)
+                : null,
+            child: registerCubit.profileImage == null
+                ? Icon(Icons.camera_alt, size: 30.sp)
+                : null,
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildPasswordField(RegisetrCubit registerCubit) {
+    return BlocBuilder<RegisetrCubit, RegisetrState>(
+      builder: (context, state) {
+        return CustomTextField(
+          controller: registerCubit.passwordController,
+          label: 'Password',
+          obscureText: !registerCubit.isPasswordVisible,
+          suffixIcon: IconButton(
+            icon: Icon(
+              registerCubit.isPasswordVisible
+                  ? Icons.visibility
+                  : Icons.visibility_off,
+              size: 24.sp,
+            ),
+            onPressed: registerCubit.togglePasswordVisibility,
+          ),
+          validator: (value) => value == null || value.isEmpty
+              ? 'Please enter your password.'
+              : null,
+        );
+      },
+    );
+  }
+
   Widget _buildRegisterButton(RegisetrCubit registerCubit) {
     return BlocConsumer<RegisetrCubit, RegisetrState>(
       listener: (context, state) {
         if (state is RegisterSuccess) {
-          context.go(AppRoutes.login);
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Registration Successful!')),
           );
+          context.go('/login');
         } else if (state is RegisterFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(state.error)),
@@ -119,14 +142,11 @@ class RegisterScreen extends StatelessWidget {
       },
       builder: (context, state) {
         if (state is RegisterLoading) {
-          return const Center(child: CircularProgressIndicator());
+          return const CircularProgressIndicator();
         }
         return ElevatedButton(
           onPressed: registerCubit.register,
-          child: Text(
-            'Register',
-            style: TextStyle(fontSize: 18.sp),
-          ),
+          child: Text('Register', style: TextStyle(fontSize: 18.sp)),
         );
       },
     );
